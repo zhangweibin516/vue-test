@@ -34,8 +34,28 @@ export default {
       return true
     })
 
+    if (sort === '+id') {
+      console.log(mockList)
+      mockList = mockList.sort((a, b) => a.id - b.id)
+      console.log(mockList)
+    }
+
     if (sort === '-id') {
-      mockList = mockList.reverse()
+      console.log(mockList)
+      mockList = mockList.sort((a, b) => b.id - a.id)
+      console.log(mockList)
+    }
+
+    if (sort === '+c5_steam') {
+      console.log(mockList)
+      mockList = mockList.sort((a, b) => a.c5_steam - b.c5_steam)
+      console.log(mockList)
+    }
+
+    if (sort === '-c5_steam') {
+      console.log(mockList)
+      mockList = mockList.sort((a, b) => b.c5_steam - a.c5_steam)
+      console.log(mockList)
     }
 
     const pageList = mockList.filter((item, index) => index < limit * page && index >= limit * (page - 1))

@@ -3,7 +3,7 @@
     <div class="filter-container">
       <el-input :placeholder="$t('rateTable.name')" v-model="listQuery.name" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
 
-      <el-select v-model="listQuery.rarity" :placeholder="$t('rateTable.rarity')" clearable style="width: 130px" class="filter-item">
+      <el-select v-model="listQuery.rarity" :placeholder="$t('rateTable.rarity')" clearable style="width: 130px" class="filter-item" @change="handleFilter">
         <el-option v-for="item in rarityOptions" :key="item" :label="item" :value="item"/>
       </el-select>
 
@@ -18,7 +18,8 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">{{ $t('rateTable.search') }}</el-button>
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('rateTable.add') }}</el-button>
       <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">{{ $t('rateTable.export') }}</el-button>
-      <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">{{ $t('rateTable.reviewer') }}</el-checkbox>
+      
+      <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">{{ $t('rateTable.moreaction') }}</el-checkbox>
     </div>
 
     <el-table
@@ -62,7 +63,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column :label="$t('rateTable.actions')" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column v-if="showReviewer" :label="$t('rateTable.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{ $t('rateTable.edit') }}</el-button>
           <el-button v-if="scope.row.status!='published'" size="mini" type="success" @click="handleModifyStatus(scope.row,'published')">{{ $t('rateTable.publish') }}
@@ -101,7 +102,7 @@
 
 <script>
 import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
-import {fetchC5_SList} from '@/api/ratelist'
+import {fetchC5_SList, getC5_SList} from '@/api/ratelist'
 import waves from '@/directive/waves' // 水波纹指令
 import { parseTime } from '@/utils'
 
@@ -134,7 +135,12 @@ export default {
         sort: '+id',
       },
       rarityOptions: ['All','至宝', '不朽', '神话', '传说'],
-      sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
+      sortOptions: [
+        { label: 'ID Asc', key: '+id' }, 
+        { label: 'ID Des', key: '-id' },
+        { label: 'Rate Asc', key: '+c5_steam' },
+        { label: 'Rate Des', key: '-c5_steam' },
+      ],
       statusOptions: ['published', 'draft', 'deleted'], 
       showReviewer: false,
       temp: {
@@ -165,7 +171,7 @@ export default {
   methods: {
     getRateList() {
       this.listLoading = true
-      fetchC5_SList(this.listQuery).then(response => {
+      getC5_SList(this.listQuery).then(response => {
         console.log(response.data)
         this.list = response.data.items
         this.total = response.data.total
@@ -314,4 +320,8 @@ export default {
     }
   }
 }
+
 </script>
+<style>
+</style>
+
